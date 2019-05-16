@@ -5,14 +5,12 @@ from scrapypan.items import LianItem
 #所有爬虫的基类，用户定义的爬虫必须从这个类继承
 class DmozSpider(scrapy.Spider):
   #name是spider最重要的属性，而且是必须的。
-  name = "dmoz"
+  name = "panpan"
   allowed_domains = ["cd.lianjia.com"]
-  start_urls = [
-    "https://cd.lianjia.com/ershoufang/pg1tt2/",
-  ]
+  
   # 开始循环
   def start_requests(self):
-    for pageIdx in range(1, 3):
+    for pageIdx in range(1, 2):
       yield scrapy.Request(
         url=f'https://cd.lianjia.com/ershoufang/pg{pageIdx}tt2/',
         callback=self.parse,
@@ -22,9 +20,9 @@ class DmozSpider(scrapy.Spider):
   def parse(self, response):
     for sel in response.xpath('//ul[contains(@class, "sellListContent")]/li'):
       item = ScrapypanItem()
-      item['title'] = sel.xpath('//div[contains(@class, "title")]/a/text()').extract()[0]
-      item['link'] = sel.xpath('//div[contains(@class, "title")]/a/@href').extract()[0]
-      item['desc'] = sel.xpath('//div[contains(@class, "houseInfo")]/text()').extract()[0]
+      item['title'] = sel.xpath('div/div[contains(@class, "title")]/a/text()').extract()[0]
+      item['link'] = sel.xpath('div/div[contains(@class, "title")]/a/@href').extract()[0]
+      item['desc'] = sel.xpath('div//div[contains(@class, "houseInfo")]/text()').extract()[0]
       # yield item
       url = item['link']
       print(url)
