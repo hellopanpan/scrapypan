@@ -14,6 +14,7 @@ class ScrapypanItem(scrapy.Item):
     title = scrapy.Field()
     link = scrapy.Field()
     desc = scrapy.Field()
+    price = scrapy.Field()
     detail = scrapy.Field()
 
 class LianItem(scrapy.Item):

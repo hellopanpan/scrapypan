@@ -23,6 +23,8 @@ class DmozSpider(scrapy.Spider):
       item['title'] = sel.xpath('div/div[contains(@class, "title")]/a/text()').extract()[0]
       item['link'] = sel.xpath('div/div[contains(@class, "title")]/a/@href').extract()[0]
       item['desc'] = sel.xpath('div//div[contains(@class, "houseInfo")]/text()').extract()[0]
+      num = sel.xpath('div//div[contains(@class, "totalPrice")]/span/text()').extract()[0]
+      item['price'] = int(num)
       # yield item
       url = item['link']
       print(url)
