@@ -14,4 +14,9 @@ class ScrapypanItem(scrapy.Item):
     title = scrapy.Field()
     link = scrapy.Field()
     desc = scrapy.Field()
-    pass
+    detail = scrapy.Field()
+
+class LianItem(scrapy.Item):
+    # define the fields for your item here like:
+    # name = scrapy.Field()
+    pic = scrapy.Field()
