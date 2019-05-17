@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 import scrapy
+import re
 from scrapypan.items import ScrapypanItem
 from scrapypan.items import LianItem
 #所有爬虫的基类，用户定义的爬虫必须从这个类继承
@@ -10,7 +11,7 @@ class DmozSpider(scrapy.Spider):
   
   # 开始循环
   def start_requests(self):
-    for pageIdx in range(1, 2):
+    for pageIdx in range(1, 3):
       yield scrapy.Request(
         url=f'https://cd.lianjia.com/ershoufang/pg{pageIdx}tt2/',
         callback=self.parse,
@@ -18,18 +19,27 @@ class DmozSpider(scrapy.Spider):
       )
   # 处理返回
   def parse(self, response):
-    for sel in response.xpath('//ul[contains(@class, "sellListContent")]/li'):
-      item = ScrapypanItem()
-      item['title'] = sel.xpath('div/div[contains(@class, "title")]/a/text()').extract()[0]
-      item['link'] = sel.xpath('div/div[contains(@class, "title")]/a/@href').extract()[0]
-      item['desc'] = sel.xpath('div//div[contains(@class, "houseInfo")]/text()').extract()[0]
-      num = sel.xpath('div//div[contains(@class, "totalPrice")]/span/text()').extract()[0]
-      item['price'] = int(num)
-      # yield item
-      url = item['link']
-      print(url)
-      yield item
-      yield scrapy.Request(url, callback=self.parse_item)
+    try:
+      for sel in response.xpath('//ul[contains(@class, "sellListContent")]/li'):
+        item = ScrapypanItem()
+        item['title'] = sel.xpath('div/div[contains(@class, "title")]/a/text()').extract()[0]
+        item['link'] = sel.xpath('div/div[contains(@class, "title")]/a/@href').extract()[0]
+        item['desc'] = sel.xpath('div//div[contains(@class, "houseInfo")]/text()').extract()[0]
+        
+        item['location'] = sel.xpath('div//div[contains(@class, "houseInfo")]/a/text()').extract()[0]
+        item['more'] = sel.xpath('div//div[contains(@class, "positionInfo")]/text()').extract()[0]
+        num = sel.xpath('div//div[contains(@class, "totalPrice")]/span/text()').extract()[0]
+        item['price'] = int(num)
+        unitPrice = sel.xpath('div//div[contains(@class, "unitPrice")]/span/text()').extract()[0]
+        num2 = re.findall('\d+',unitPrice)[0]
+        item['unit'] = int(num2)
+        # yield item
+        url = item['link']
+        yield item
+        yield scrapy.Request(url, callback=self.parse_item)
+    except expression as identifier:
+      print('Error:---------------1----------------------')
+    
       
   
   def error(self, response):
