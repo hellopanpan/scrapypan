@@ -24,6 +24,7 @@ class DmozSpider(scrapy.Spider):
         item = ScrapypanItem()
         item['title'] = sel.xpath('div/div[contains(@class, "title")]/a/text()').extract()[0]
         item['link'] = sel.xpath('div/div[contains(@class, "title")]/a/@href').extract()[0]
+        item['pic'] = sel.xpath('a/img/@data-original').extract()[0]
         item['desc'] = sel.xpath('div//div[contains(@class, "houseInfo")]/text()').extract()[0]
         
         item['location'] = sel.xpath('div//div[contains(@class, "houseInfo")]/a/text()').extract()[0]
@@ -36,7 +37,7 @@ class DmozSpider(scrapy.Spider):
         # yield item
         url = item['link']
         yield item
-        yield scrapy.Request(url, callback=self.parse_item)
+        # yield scrapy.Request(url, callback=self.parse_item)
     except expression as identifier:
       print('Error:---------------1----------------------')
     
@@ -47,8 +48,8 @@ class DmozSpider(scrapy.Spider):
     pass
 
   def parse_item(self, response):
-    for res in response.xpath("//div[contains(@class, 'content')]"):
+    for res in response.xpath("//div[contains(@class, 'overview')]"):
       print(res)
       item2 = LianItem()
-      item2['pic'] = res.xpath("//h1/text()").extract()[0]
+      item2['pic'] = res.xpath("div/div[contains(@class, 'imgContainer')]/img/@src").extract()[0]
       yield item2
